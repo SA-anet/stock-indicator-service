@@ -1,0 +1,1 @@
+Command to compile the proto file: `protoc --go_out=. --go-grpc_out=. stock_service.proto`

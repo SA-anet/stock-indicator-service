@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package stock_service;
+
+option go_package = "./stock_service";
+
+service StockService {
+    rpc GetStockDetails (StockRequest) returns (StockResponse);
+}
+
+message StockRequest {
+    enum Indicator {
+        AVERAGE=0;
+        MIN=1;
+        MAX=2;
+        STD_DEVIATION=3;
+    }
+    string stockName = 1;
+    int64 nDays = 2;
+    Indicator indicator = 3;
+}
+
+message StockResponse {
+    float price = 1;
+}
