@@ -25,7 +25,7 @@ type Tickers struct {
 	tickers []float64
 }
 
-func getNDayData(n int) Tickers {
+func CalculateIndicator(n int, operation string) float64 {
 	ticker := Tickers{tickers: make([]float64, n)}
 	resp, err := goyhfin.GetTickerData("ANET", strconv.Itoa(n)+"d", goyhfin.OneDay, false)
 	if err != nil {
@@ -35,11 +35,11 @@ func getNDayData(n int) Tickers {
 	for i := range resp.Quotes {
 		ticker.tickers[i] = resp.Quotes[i].Close
 	}
-	return ticker
+	return ticker.cumulativeOperation(operation)
 }
 
-func CumulativeOperation(n int, operation string) float64 {
-	ticker := getNDayData(n).tickers
+func (tickers Tickers) cumulativeOperation(operation string) float64 {
+	ticker := tickers.tickers
 	switch operation {
 	case "MAX":
 		maxTicker := -math.MaxFloat64
@@ -50,7 +50,6 @@ func CumulativeOperation(n int, operation string) float64 {
 	case "MIN":
 		minTicker := math.MaxFloat64
 		for i := 0; i < len(ticker); i++ {
-			fmt.Println(i, ticker[i])
 			minTicker = math.Min(minTicker, ticker[i])
 		}
 		return minTicker
@@ -59,8 +58,17 @@ func CumulativeOperation(n int, operation string) float64 {
 		for i := 0; i < len(ticker); i++ {
 			avg += ticker[i]
 		}
-		avg /= float64(n)
+		avg /= float64(len(ticker))
 		return avg
+	case "STDDEV":
+		mean := tickers.cumulativeOperation("AVG")
+		var sd float64 = 0
+		for i := 0; i < len(ticker); i++ {
+			sd += math.Pow(ticker[i]-mean, 2)
+		}
+		sd /= float64(len(ticker))
+		sd = math.Sqrt(sd)
+		return sd
 	default:
 		return -1
 	}
