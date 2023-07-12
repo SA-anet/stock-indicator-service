@@ -12,7 +12,7 @@ import (
 
 var (
 	stockName    = flag.String("stockName", "ANET", "The name of the stock (default: ANET)")
-	days         = flag.Int64("days", 1, "the number of days to look back")
+	days         = flag.Int64("days", 2, "the number of days to look back")
 	average      = flag.Bool("average", false, "Get the average of the prices")
 	min          = flag.Bool("min", false, "Get the minimum value of the prices")
 	max          = flag.Bool("max", false, "Get the maximum value of the prices")
@@ -33,11 +33,12 @@ func getIndicator() (stock_service.StockRequest_Indicator, error) {
 	for ind, flag := range flags {
 		if *flag {
 			flagCount++
+			indicator = indicators[ind]
 		}
 		if flagCount > 1 {
 			return stock_service.StockRequest_AVERAGE, errors.New("Cannot do more than one action at once")
 		}
-		indicator = indicators[ind]
+
 	}
 
 	return indicator, nil
@@ -47,7 +48,7 @@ func main() {
 	flag.Parse()
 
 	var conn *grpc.ClientConn
-	conn, err := grpc.Dial(":5001", grpc.WithInsecure())
+	conn, err := grpc.Dial(":5003", grpc.WithInsecure())
 	if err != nil {
 		fmt.Println("Error creating a connection")
 	}

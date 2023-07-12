@@ -9,10 +9,13 @@ import (
 )
 
 var (
-	PORT = 5001
+	PORT = 5003
 )
 
 func main() {
+	fmt.Println("Before starting the server")
+	stock_service.Hello(7)
+
 	fmt.Printf("Starting the server at port %v\n", PORT)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%v", PORT))
@@ -21,10 +24,15 @@ func main() {
 		return
 	}
 
+	stock_service.Hello(7)
+
 	s := stock_service.Server{}
 	grpcServer := grpc.NewServer()
 	stock_service.RegisterStockServiceServer(grpcServer, &s)
 	if err := grpcServer.Serve(lis); err != nil {
 		fmt.Println("Failed to server the gRPC server")
+		return
 	}
+
+	fmt.Println("Successfully started the server!")
 }
