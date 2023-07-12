@@ -46,6 +46,10 @@ func getIndicator() (stock_service.StockRequest_Indicator, error) {
 
 func main() {
 	flag.Parse()
+	if *days < 2 {
+		fmt.Printf("The number of days cannot be less than 2\n")
+		return
+	}
 
 	var conn *grpc.ClientConn
 	conn, err := grpc.Dial(":5003", grpc.WithInsecure())
