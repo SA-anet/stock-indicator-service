@@ -26,8 +26,5 @@ func main() {
 	stock_service.RegisterStockServiceServer(grpcServer, &s)
 	if err := grpcServer.Serve(lis); err != nil {
 		fmt.Println("Failed to server the gRPC server")
-		return
 	}
-
-	fmt.Println("Successfully started the server!")
 }
